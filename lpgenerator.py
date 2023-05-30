@@ -13,6 +13,15 @@ def source_to_transit_capacity(sources,transit,destination):
 
 def transit_to_desination_capacity(sources,transit,destination):
     capacity_string = ""
+    for j in range(1,destination+1):
+        for k in range(1, transit + 1):
+            entry = ""
+            for i in range(1, sources + 1):
+                entry += "x{}{}{} + ".format(i,k,j)
+            entry = entry[0:-2]
+            entry += "- d{}{} <= 0 \n".format(k,j)
+            capacity_string += entry
+    return capacity_string
 
 def source_to_dest_demand_volume(sources,transit,destination):
     #generates the load count hij = i + j for each path x ikj
@@ -59,6 +68,10 @@ def main():
     print(bar)
 
     #transit to destination capacity, dkj
+    transit_cap = transit_to_desination_capacity(sources,transit,destination)
+    lp_file += source_cap
+    print(lp_file)
+    print(bar)
 
     #source to destination demand load
     demand_load = source_to_dest_demand_volume(sources,transit,destination)
