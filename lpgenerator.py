@@ -36,8 +36,11 @@ def source_to_dest_demand_volume(sources,transit,destination):
             entry = entry[0:-2]
             entry += "= {} \n".format(i+j)
             demand_string += entry
-
     return demand_string
+
+def split_along_two_paths(sources,transit,destination):
+    #generates and adds each binary and supporting constraight to ensure each
+    #demand load goes over exactly two different paths
 
 
 def main():
@@ -64,22 +67,18 @@ def main():
     #source to transit capacity, cik
     source_cap = source_to_transit_capacity(sources,transit,destination)
     lp_file += source_cap
-    print(lp_file)
-    print(bar)
 
     #transit to destination capacity, dkj
     transit_cap = transit_to_desination_capacity(sources,transit,destination)
-    lp_file += source_cap
-    print(lp_file)
-    print(bar)
+    lp_file += transit_cap
 
     #source to destination demand load
     demand_load = source_to_dest_demand_volume(sources,transit,destination)
     lp_file += demand_load
-    print(lp_file)
-    print(bar)
 
     #split over 2 paths
+    print(lp_file)
+    print(bar)
     
 
 main()
