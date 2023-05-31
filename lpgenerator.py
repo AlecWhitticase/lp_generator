@@ -1,3 +1,5 @@
+import sys
+
 def source_to_transit_capacity(sources,transit,destination):
     capacity_string = ""
     #generates the arguments that cik for each source transit pair <= link capacity
@@ -64,18 +66,63 @@ def split_along_two_paths(sources,transit,destination):
                 binary_string += "2 x{}{}{} - {} u{}{}{} = 0 \n".format(i,k,j,i+j,i,k,j)
     return binary_string
 
+def load_balance_r(sources,transit,destination):
+    #make the r equations to minimise
+    r_string = ""
+    for k in range(1,transit+1):
+        big_entry = ""
+        for i in range(1,sources+1):
+            sub_entry = ""
+            for j in range(1,destination+1):
+                sub_entry += "x{}{}{} + ".format(i,k,j)
+            big_entry += sub_entry
+        big_entry = big_entry[0:-2]
+        big_entry += "- r <= 0\n"
+        r_string += big_entry
+    return r_string
+
+def bounds(sources,transit,destination):
+    #bounds section (r,path flow,transit to destination and source to transit)
+    bound_string = ""
+    
+    bound_string += "r >= 0 \n"
+
+    for i in range(1,sources + 1):
+        for k in range(1, transit + 1):
+            for j in range(1, destination + 1):
+                bound_string += "x{}{}{} >= 0 \n".format(i,k,j)
+
+    for k in range(1,transit + 1):
+        for i in range(1, sources + 1):
+            bound_string += "c{}{} >= 0 \n".format(i,k)
+
+    for k in range(1,transit + 1):
+        for j in range(1,destination + 1):
+            bound_string += "d{}{} >= 0 \n".format(k,j)
+    
+    return bound_string
+
+def binarys(sources,transit,destination):
+    binary_string = ""
+    for i in range(1,sources + 1):
+        for k in range(1,transit + 1):
+            for j in range(1, destination + 1):
+                binary_string += "u{}{}{} \n".format(i,k,j)
+
+    return binary_string
+
+
+
 
 
 def main():
     bar = "----------------------------------------------"
-    #Get values for x,y,z
-    # Si means source node i, yk
-    #sources = int(input("Number of sources: "))
-    #transit = int(input("Number of transits: "))
-    #destination = input(("Number of destinations: "))
     sources = 7
     transit = 3
     destination = 7
+    #sources = int(sys.argv[1])
+    #transit = int(sys.argv[2])
+    #destination = int(sys.argv[3])
 
     # order mentioned in problem description
     # source to transit capacity,transit to destination capacity,
@@ -99,13 +146,28 @@ def main():
     demand_load = source_to_dest_demand_volume(sources,transit,destination)
     lp_file += demand_load
 
-    #split over 2 paths
+    #split over 2 paths/binary func
     binary_values = split_along_two_paths(sources,transit,destination)
     lp_file += binary_values
-    print(lp_file)
-    print(bar)
 
     # everything for a given transit -r <= 0
+    min_r_line = load_balance_r(sources,transit,destination)
+    lp_file += min_r_line
+
+    #bounds section (r,path flow,transit to destination and source to transit)
+    lp_file += "Bounds \n"
+    bound = bounds(sources,transit,destination)
+    lp_file += bound
+
+    #binarys
+    lp_file += "Binary \n"
+    binary = binarys(sources,transit,destination)
+    lp_file += binary
+
+    lp_file += "End"
+
+    print(lp_file)
+    print(bar)
     
 
 main()
