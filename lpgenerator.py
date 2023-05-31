@@ -166,8 +166,8 @@ def main():
 
     lp_file += "End"
 
-    print(lp_file)
-    print(bar)
+    with open('test.lp', 'w') as f:
+        f.write(lp_file)
     
 
 main()
