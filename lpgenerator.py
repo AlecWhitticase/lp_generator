@@ -39,8 +39,31 @@ def source_to_dest_demand_volume(sources,transit,destination):
     return demand_string
 
 def split_along_two_paths(sources,transit,destination):
+    binary_string = ""
     #generates and adds each binary and supporting constraight to ensure each
     #demand load goes over exactly two different paths
+    #first, add that all possible source:destination pairs only use one souce node
+    for i in range(1,sources + 1):
+        for j in range(1,destination + 1):
+            entry = ""
+            #now we're in source/destination pairs, find binarys
+            for k in range(1,transit+1):
+                entry += "u{}{}{} + ".format(i,k,j)
+            entry = entry[0:-2]
+            entry += "= 2 \n"
+            binary_string += entry
+    #That first section covers u111 + u121 + u131 type stuff
+    #second part is 2 (path) - load (path binary) = 0
+    #checks that either both are 0 or both are equal to load dependent
+    # on if the binary is true
+    #if it's being used, flow = half max
+    #otherwise, should be zero
+    for i in range(1,sources+1):
+        for k in range(1,transit+1):
+            for j in range(1,destination+1):
+                binary_string += "2 x{}{}{} - {} u{}{}{} = 0 \n".format(i,k,j,i+j,i,k,j)
+    return binary_string
+
 
 
 def main():
@@ -77,8 +100,12 @@ def main():
     lp_file += demand_load
 
     #split over 2 paths
+    binary_values = split_along_two_paths(sources,transit,destination)
+    lp_file += binary_values
     print(lp_file)
     print(bar)
+
+    # everything for a given transit -r <= 0
     
 
 main()
