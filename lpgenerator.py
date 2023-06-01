@@ -117,9 +117,9 @@ def binarys(sources,transit,destination):
 
 def main():
     bar = "----------------------------------------------"
-    sources = 7
-    transit = 3
-    destination = 7
+    sources = 3
+    transit = 2
+    destination = 3
     #sources = int(sys.argv[1])
     #transit = int(sys.argv[2])
     #destination = int(sys.argv[3])
@@ -127,6 +127,10 @@ def main():
     # order mentioned in problem description
     # source to transit capacity,transit to destination capacity,
     # #source to destination demand load, split over 2 paths
+
+    if transit < 2:
+        print("Invalid. Transit nodes must number at least 2.")
+        sys.exit()
 
     #start generating the lp file
     lp_file = ""
@@ -166,12 +170,10 @@ def main():
 
     lp_file += "End"
 
-    with open('test.lp', 'w') as f:
+    with open('323.lp', 'w') as f:
         f.write(lp_file)
     
 
 main()
-
-
 
 
