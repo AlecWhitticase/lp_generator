@@ -117,12 +117,12 @@ def binarys(sources,transit,destination):
 
 def main():
     bar = "----------------------------------------------"
-    sources = 3
-    transit = 2
-    destination = 3
-    #sources = int(sys.argv[1])
-    #transit = int(sys.argv[2])
-    #destination = int(sys.argv[3])
+    #sources = 3
+    #transit = 2
+    #destination = 3
+    sources = int(sys.argv[1])
+    transit = int(sys.argv[2])
+    destination = int(sys.argv[3])
 
     # order mentioned in problem description
     # source to transit capacity,transit to destination capacity,
